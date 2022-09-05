@@ -10,7 +10,7 @@ console.log(savedTime);
 
 (() => {
     if (!player){
-        console.log('Не вдається ініціалізувати відео прргравач');
+        console.log('Не вдається відтворити  відео програвач');
         return;
     }
 
