@@ -45,7 +45,7 @@ function populateTextarea() {
         refs.textarea.value = savedMessage;
     }
 }
-
+// форма локал сторейдж для всех инпутов 
 const formData = {};
 refs.form.addEventListener('input', event =>{
 formData[event.target.name] = event.target.value;
