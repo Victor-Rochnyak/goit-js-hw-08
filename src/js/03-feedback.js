@@ -50,4 +50,6 @@ const formData = {};
 refs.form.addEventListener('input', event =>{
 formData[event.target.name] = event.target.value;
 console.log(formData);
+
 })
+
