@@ -1,55 +1,42 @@
+
 import throttle from 'lodash.throttle';
+const LOCAL_STORAGE_KEY = 'feedback-form-state';
+const filterForm = document.querySelector('.feedback-form');
 
-const STORAGE_KEY = 'feedback-message';
-const refs ={
-    form: document.querySelector('.feedback-form'),
-    textarea: document.querySelector('textarea'),
+
+initForm();
+
+filterForm.addEventListener('submit', event => {
+  event.preventDefault();
+  const formData = new FormData(filterForm);
+  localStorage.clear(LOCAL_STORAGE_KEY);
+  filterForm.reset();
+  formData.forEach((value, name) => console.log(value, name));
+
+});
+function onFormChange() {
+filterForm.addEventListener('input', event => {
+    let userData = localStorage.getItem(LOCAL_STORAGE_KEY);
+    userData = userData ? JSON.parse(userData) : {};
+    userData[event.target.name] = event.target.value;
+  
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(userData));
+  });
 }
+filterForm.addEventListener('change', event => {
+  let goFilters = localStorage.getItem(LOCAL_STORAGE_KEY);
+  goFilters = goFilters ? JSON.parse(goFilters) : {};
+  goFilters[event.target.name] = event.target.value;
+  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(goFilters));
+});
 
-refs.form.addEventListener('submit', onFormSubmit);
-refs.textarea.addEventListener('input', throttle(onTextareaInput, 500));
-
-populateTextarea()
-/*
-- Зупиняємо поведінку по змовчуванню
-- Забираємо повідомлення з хранилища
-- очищуємо форму
-*/
-function onFormSubmit(event){
-    event.preventDefault();
-    console.log('відправляємо форму');
-
-    event.currentTarget.reset();
-    localStorage.removeItem(STORAGE_KEY);
+function initForm() {
+  let goFilters = localStorage.getItem(LOCAL_STORAGE_KEY);
+  if (goFilters) {
+    goFilters = JSON.parse(goFilters);
+    Object.entries(goFilters).forEach(([name, value]) => {
+      filterForm.elements[name].value = value;
+    });
+  }
 }
-
-/*
-- дістаємо значення поля
-- зберігаємо його в хранилищі
-- МОжно добавити throttle
-*/
-function onTextareaInput(event){
-    const message = event.target.value;
-    localStorage.setItem(STORAGE_KEY, message);
-}
-
-
-/*
-- Получаем значения из хранилища
-- если там что то было, обновляем DOM
-*/
-function populateTextarea() {
-    const savedMessage = localStorage.getItem(STORAGE_KEY);
-    if(savedMessage){
-        console.log(savedMessage);
-        refs.textarea.value = savedMessage;
-    }
-}
-// форма локал сторейдж для всех инпутов 
-const formData = {};
-refs.form.addEventListener('input', event =>{
-formData[event.target.name] = event.target.value;
-console.log(formData);
-
-})
-
+filterForm.addEventListener('input', throttle (onFormChange, 500));
